@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -16,6 +17,7 @@ namespace WpfApp1
         VisualCollection AdornerVisuals;
         Thumb ThumbUpperLeft, ThumbBottomRight;
         Rectangle RectBorder;
+        Button BtnRemove;
 
         public ResizeAdorner(UIElement adornedElement) : base(adornedElement)
         {
@@ -23,6 +25,11 @@ namespace WpfApp1
             ThumbUpperLeft = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             ThumbBottomRight = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             RectBorder = new Rectangle() { Stroke = Brushes.Coral, StrokeThickness = 2, StrokeDashArray = { 3, 2 } };
+            BtnRemove = new Button { 
+                Height = 10, Width = 10, 
+                Content = "X", FontSize = 5,
+                Foreground = Brushes.White, Background = Brushes.Red
+            };
 
             ThumbUpperLeft.DragDelta += ThumbUpperLeft_DragDelta;
             ThumbBottomRight.DragDelta += ThumbBottomRight_DragDelta;
@@ -30,7 +37,9 @@ namespace WpfApp1
             AdornerVisuals.Add(RectBorder);
             AdornerVisuals.Add(ThumbUpperLeft);
             AdornerVisuals.Add(ThumbBottomRight);
+            AdornerVisuals.Add(BtnRemove);
         }
+
         private void ThumbUpperLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
             var elem = (FrameworkElement)AdornedElement;
@@ -56,6 +65,7 @@ namespace WpfApp1
         protected override Size ArrangeOverride(Size finalSize)
         {
             RectBorder.Arrange(new Rect(-2.5, -2.5, AdornedElement.DesiredSize.Width + 5, AdornedElement.DesiredSize.Height + 5));
+            BtnRemove.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, -5, 10, 10));
             ThumbUpperLeft.Arrange(new Rect(-5, -5, 10, 10));
             ThumbBottomRight.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, AdornedElement.DesiredSize.Height - 5, 10, 10));
             return base.ArrangeOverride(finalSize);

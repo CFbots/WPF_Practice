@@ -74,6 +74,7 @@ namespace cf
             rectSelectArea.MouseLeftButtonDown += Rec_MouseLeftButtonDown;
             rectSelectArea.MouseMove += Rec_MouseMove;
             rectSelectArea.MouseLeftButtonUp += Rec_MouseLeftButtonUp;
+            rectSelectArea.MouseRightButtonDown += Rec_MouseRightButtonDown;
 
             AdornerLayer.GetAdornerLayer(ImageCanvas).Add(new ResizeAdorner(rectSelectArea));
         }
@@ -81,8 +82,7 @@ namespace cf
         private void Rec_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             Rectangle rec = (Rectangle)sender;
-            //ColorPickerPalette colorPickerPalette = new ColorPickerPalette();
-
+            ImageCanvas.Children.Remove(rec);
         }
 
         private void Rec_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

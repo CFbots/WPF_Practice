@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <Button Grid.Row="0" Name="btnFire" Content="Upload the Picture" 
-                Width="120" Height="40" 
+                Width="120" Height="Auto" Margin="0,0,0,10"
                 Click="btnFire_Click"/>
         
         <Canvas Grid.Row="1" Name="ImageCanvas">
