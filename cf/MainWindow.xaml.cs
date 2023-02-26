@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfApp1;
 
 namespace cf
 {
@@ -60,7 +61,7 @@ namespace cf
 
             rectSelectArea = new Rectangle()
             {
-                Stroke = Brushes.Black,
+                Stroke = Brushes.LightBlue,
                 StrokeThickness = 2,
                 Fill = Brushes.LightBlue,
             };
@@ -73,7 +74,8 @@ namespace cf
             rectSelectArea.MouseLeftButtonDown += Rec_MouseLeftButtonDown;
             rectSelectArea.MouseMove += Rec_MouseMove;
             rectSelectArea.MouseLeftButtonUp += Rec_MouseLeftButtonUp;
-            //rectSelectArea.MouseRightButtonDown += Rec_MouseRightButtonDown;
+
+            AdornerLayer.GetAdornerLayer(ImageCanvas).Add(new ResizeAdorner(rectSelectArea));
         }
 
         private void Rec_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -102,15 +104,15 @@ namespace cf
                 if (margineLeft < 0) {
                     margineLeft = 0;
                 }
-                else if ((margineLeft + rec.Width) > ImageCanvas.Width) {
-                    margineLeft = ImageCanvas.Width - rec.Width;
+                else if ((margineLeft + rec.Width) > ImageCanvas.ActualWidth) {
+                    margineLeft = ImageCanvas.ActualWidth - rec.Width;
                 }
                 if(margineTop < 0) { 
                     margineTop= 0;
                 }
-                else if ((margineTop + rec.Height) > ImageCanvas.Height)
+                else if ((margineTop + rec.Height) > ImageCanvas.ActualHeight)
                 {
-                    margineTop = ImageCanvas.Height - rec.Height;
+                    margineTop = ImageCanvas.ActualHeight - rec.Height;
                 }
                 Canvas.SetLeft(rec, margineLeft);
                 Canvas.SetTop(rec, margineTop);
