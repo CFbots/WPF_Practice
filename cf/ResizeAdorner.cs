@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using cf;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,14 +7,14 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace cf
 {
     public class ResizeAdorner : Adorner
     {
         VisualCollection AdornerVisuals;
         Thumb ThumbUpperLeft, ThumbBottomRight;
         Rectangle RectBorder;
-        Button BtnRemove;
+        Button BtnChangeColor;
 
         public ResizeAdorner(UIElement adornedElement) : base(adornedElement)
         {
@@ -25,7 +22,7 @@ namespace WpfApp1
             ThumbUpperLeft = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             ThumbBottomRight = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             RectBorder = new Rectangle() { Stroke = Brushes.Coral, StrokeThickness = 2, StrokeDashArray = { 3, 2 } };
-            BtnRemove = new Button { 
+            BtnChangeColor = new Button { 
                 Height = 10, Width = 10, 
                 Content = "X", FontSize = 5,
                 Foreground = Brushes.White, Background = Brushes.Red
@@ -33,11 +30,23 @@ namespace WpfApp1
 
             ThumbUpperLeft.DragDelta += ThumbUpperLeft_DragDelta;
             ThumbBottomRight.DragDelta += ThumbBottomRight_DragDelta;
+            BtnChangeColor.Click += BtnChangeColor_Click;
 
             AdornerVisuals.Add(RectBorder);
             AdornerVisuals.Add(ThumbUpperLeft);
             AdornerVisuals.Add(ThumbBottomRight);
-            AdornerVisuals.Add(BtnRemove);
+            AdornerVisuals.Add(BtnChangeColor);
+        }
+
+        private void BtnChangeColor_Click(object sender, RoutedEventArgs e)
+        {
+            var rect = (Rectangle)AdornedElement;
+            ColorPicker colorPicker = new ColorPicker();
+            if (colorPicker.ShowDialog() == true)
+            {
+                rect.Fill = colorPicker.SelectColor.Background;
+                rect.Stroke = colorPicker.SelectColor.Background;
+            }
         }
 
         private void ThumbUpperLeft_DragDelta(object sender, DragDeltaEventArgs e)
@@ -65,7 +74,7 @@ namespace WpfApp1
         protected override Size ArrangeOverride(Size finalSize)
         {
             RectBorder.Arrange(new Rect(-2.5, -2.5, AdornedElement.DesiredSize.Width + 5, AdornedElement.DesiredSize.Height + 5));
-            BtnRemove.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, -5, 10, 10));
+            BtnChangeColor.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, -5, 10, 10));
             ThumbUpperLeft.Arrange(new Rect(-5, -5, 10, 10));
             ThumbBottomRight.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, AdornedElement.DesiredSize.Height - 5, 10, 10));
             return base.ArrangeOverride(finalSize);
