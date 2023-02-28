@@ -8,7 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resource\color_palette.png" />
+    <None Remove="Resource\folder.png" />
+    <None Remove="Resource\save.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resource\color_palette.png" />
+    <Resource Include="Resource\folder.png" />
+    <Resource Include="Resource\save.png" />
   </ItemGroup>
 
 </Project>

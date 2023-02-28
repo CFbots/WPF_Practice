@@ -19,16 +19,16 @@ namespace cf
     /// </summary>
     public partial class ColorPicker : Window
     {
-        System.Drawing.Bitmap baseBack;//底板位图对象
-        System.Drawing.Bitmap lightBmp;//亮度位图对象
-        System.Drawing.Bitmap ColorBmp;//色谱位图对象
-        System.Drawing.Color lightColor = System.Drawing.Color.Black;//亮度色谱
-        int ColorPx = -10, ColorPy = -10;//选择颜色的坐标
-        int lightP = 121;//选择亮度的坐标
-        int ColorSelectorWidth = 18;//rectColorSelector的宽度值
-        int ColorSelectorHeight = 129;//rectColorSelector的top值
+        System.Drawing.Bitmap baseBack;//base board
+        System.Drawing.Bitmap lightBmp;//lightness
+        System.Drawing.Bitmap ColorBmp;//color
+        System.Drawing.Color lightColor = System.Drawing.Color.Black;//lightness & color
+        int ColorPx = -10, ColorPy = -10;//choose color coordinate 
+        int lightP = 121;//choose brightness coordinate 
+        int ColorSelectorWidth = 18;//rectColorSelector width
+        int ColorSelectorHeight = 129;//rectColorSelector top height
 
-        public Color returnSelectColor;//选择的颜色
+        public Color returnSelectColor;//choose color
 
         public ColorPicker()
         {
@@ -42,7 +42,7 @@ namespace cf
             SelectColor.Background = new SolidColorBrush(returnSelectColor);
         }
         /// <summary>
-        /// 获得色谱位图对象
+        /// set color back
         /// </summary>
         public void SetColorBack()
         {
@@ -70,7 +70,7 @@ namespace cf
                     R2 = IntMaxMin(R + temps);
                     G2 = IntMaxMin(G + temps);
                     B2 = IntMaxMin(B + temps);
-                    int l = Math.Max(0, lightP == 0 ? 255 : (121 - lightP) * 2);//lightP原始值
+                    int l = Math.Max(0, lightP == 0 ? 255 : (121 - lightP) * 2);//lightP original value
                     System.Drawing.Color tmpC = SetColorWhite(System.Drawing.Color.FromArgb(R2, G2, B2), l);
                     tempColor = Color.FromRgb(tmpC.R, tmpC.G, tmpC.B);
                     ColorBmp.SetPixel(j, i, System.Drawing.Color.FromArgb(tempColor.R, tempColor.G, tempColor.B));
@@ -78,7 +78,7 @@ namespace cf
             }
         }
         /// <summary>
-        /// 设置色谱位图
+        /// Set base color
         /// </summary>
         public System.Drawing.Bitmap SetBaseColorBack()
         {
@@ -110,7 +110,7 @@ namespace cf
                     ColorBmp.SetPixel(j, i, tempColor);
                 }
             }
-            //将Bitmap转换为BitmapSource
+            //Convert Bitmap to BitmapSource
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(ColorBmp);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
@@ -126,7 +126,7 @@ namespace cf
             return ColorBmp;
         }
         /// <summary>
-        /// 设置亮度位图
+        /// set brightness
         /// </summary>
         public void SetlightBack()
         {
@@ -139,7 +139,7 @@ namespace cf
                     lightBmp.SetPixel(j, i, c);
                 }
             }
-            //将Bitmap转换为BitmapSource
+            //Convert Bitmap to BitmapSource
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(lightBmp);
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
@@ -154,7 +154,7 @@ namespace cf
             g.Dispose();
         }
         /// <summary>
-        /// 设置具体坐标的色彩值
+        /// Set color value for the coordinate
         /// </summary>
         public int SetColorNum(int self, int y, bool isAdd)
         {
@@ -165,7 +165,7 @@ namespace cf
             return IntMaxMin(num);
         }
         /// <summary>
-        /// 颜色变量区域限制
+        /// set color max-min value
         /// </summary>
         public int IntMaxMin(int num)
         {
@@ -176,7 +176,7 @@ namespace cf
             return num;
         }
         /// <summary>
-        /// 设置颜色为白色
+        /// set color to white
         /// </summary>
         public System.Drawing.Color SetColorWhite(System.Drawing.Color c, int white = 50)
         {
@@ -186,7 +186,7 @@ namespace cf
             return System.Drawing.Color.FromArgb(R, G, B);
         }
 
-        #region 调色板鼠标事件
+        #region color pallete mouse event
         private void imgColor_MouseDown(object sender, MouseButtonEventArgs e)
         {
             imgColor.MouseMove += new MouseEventHandler(imgColor_MouseMove);
@@ -201,7 +201,7 @@ namespace cf
             imgColor.MouseMove -= new MouseEventHandler(imgColor_MouseMove);
         }
         /// <summary>
-        /// 同时设置颜色选择点位置
+        /// Pair color with the coordinate
         /// </summary>
         public void SetColorPoint(MouseEventArgs e)
         {
@@ -231,7 +231,7 @@ namespace cf
             Canvas.SetLeft(this.ellColor, ColorPx - 4);
         }
         /// <summary>
-        /// 颜色校正
+        /// Color verification
         /// </summary>
         public System.Drawing.Color ColorRight(System.Drawing.Color c)
         {
@@ -242,7 +242,7 @@ namespace cf
         }
         #endregion
 
-        #region 亮度调节鼠标事件
+        #region brightness adjustment mouse event
         private void imgColorSelector_MouseDown(object sender, MouseButtonEventArgs e)
         {
             imgColorSelector.MouseMove += new MouseEventHandler(imgColorSelector_MouseMove);
@@ -257,7 +257,7 @@ namespace cf
             imgColorSelector.MouseMove -= new MouseEventHandler(imgColorSelector_MouseMove);
         }
         /// <summary>
-        /// 同步设置亮度选择点位置
+        /// Pair brightness with the coordinates
         /// </summary>
         public void SetLightPoint(MouseEventArgs e)
         {

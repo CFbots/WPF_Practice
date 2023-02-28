@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -24,8 +25,10 @@ namespace cf
         {
             InitializeComponent();
         }
-
-        private void btnFire_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Upload the picture
+        /// </summary>
+        private void openPic_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Filter = "Image file|*.jpg; *.png; *.bmp";
@@ -39,11 +42,61 @@ namespace cf
             }
             if (Picture.Source == null) 
             {
-                String noUpload = "Please upload an image"; 
-                tbInfo.Text = noUpload;
+                tbInfo.Text = "Please upload an image";
             }
         }
 
+        /// <summary>
+        /// Save the picture
+        /// </summary>
+        private void savePic_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Save current canvas transform
+                Transform transform = ImageCanvas.LayoutTransform;
+                ImageCanvas.LayoutTransform = null;
+
+                Size size = new Size(ImageCanvas.RenderSize.Width, ImageCanvas.RenderSize.Height);
+                
+                ImageCanvas.Measure(size);
+                ImageCanvas.Arrange(new Rect(size));
+
+                // Create a render bitmap and push the surface to it
+                RenderTargetBitmap renderBitmap =
+                  new RenderTargetBitmap(
+                    (int)size.Width,
+                    (int)size.Height,
+                    96d,
+                    96d,
+                    PixelFormats.Pbgra32);
+                renderBitmap.Render(ImageCanvas);
+
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Image Files (*.bmp, *.png, *.jpg)|*.bmp;*.png;*.jpg | All Files | *.*";
+                sfd.RestoreDirectory = true;
+                if (sfd.ShowDialog() == true)
+                {
+                    PngBitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                    using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create))
+                    encoder.Save(stream);
+                }
+
+                // Restore previously saved layout
+                ImageCanvas.LayoutTransform = transform;
+                MessageBox.Show("Successful!");
+            }
+            catch
+            {
+                MessageBox.Show("Failed!");
+            }
+        }
+
+        /// <summary>
+        /// Draw rectangles when user press left mouse button
+        /// </summary>
         private void DrawRec(object sender, MouseButtonEventArgs e) 
         {
             isMouseDown = true;
@@ -59,71 +112,22 @@ namespace cf
             ImageCanvas.Children.Add(rectSelectArea);
             Canvas.SetLeft(rectSelectArea, startPoint.X);
             Canvas.SetTop(rectSelectArea, startPoint.Y);
-            
 
+            tbInfo.Text = "Click the right mouse to delete the rectangle; Click the up right red button to change color";
             rectSelectArea.MouseLeftButtonDown += Rec_MouseLeftButtonDown;
             rectSelectArea.MouseMove += Rec_MouseMove;
             rectSelectArea.MouseLeftButtonUp += Rec_MouseLeftButtonUp;
             rectSelectArea.MouseRightButtonDown += Rec_MouseRightButtonDown;
-
+            // Add Adorner layer
             AdornerLayer.GetAdornerLayer(ImageCanvas).Add(new ResizeAdorner(rectSelectArea));
         }
-
-        private void Rec_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Rectangle rec = (Rectangle)sender;
-            ImageCanvas.Children.Remove(rec);
-        }
-
-        private void Rec_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ((Rectangle) sender).Cursor = Cursors.Hand;
-            startToMove = true;
-            tbPosition.Text = "pressed the rect!";
-        }
-
-        private void Rec_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && startToMove == true) { 
-                Point point = e.GetPosition(ImageCanvas);
-                Rectangle rec = (Rectangle)sender;
-                double margineLeft = point.X - rec.Width / 2;
-                double margineTop = point.Y - rec.Height / 2;
-
-                tbPosition.Text = "Canvas left: " + Canvas.GetLeft(Picture);
-                if (margineLeft < 0) {
-                    margineLeft = 0;
-                }
-                else if ((margineLeft + rec.Width) > ImageCanvas.ActualWidth) {
-                    margineLeft = ImageCanvas.ActualWidth - rec.Width;
-                }
-                if(margineTop < 0) { 
-                    margineTop= 0;
-                }
-                else if ((margineTop + rec.Height) > ImageCanvas.ActualHeight)
-                {
-                    margineTop = ImageCanvas.ActualHeight - rec.Height;
-                }
-                Canvas.SetLeft(rec, margineLeft);
-                Canvas.SetTop(rec, margineTop);
-            }
-        }
-
-        private void Rec_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            ((Rectangle)sender).ReleaseMouseCapture();
-            ((Rectangle)sender).Cursor = Cursors.Arrow;
-            startToMove = false;
-        }
       
-        private void MouseButtonUp(object sender, MouseButtonEventArgs e) 
-        {
-            isMouseDown = false;
-            //rectSelectArea = null;
-            tbPosition.Text = "Button up: " + e.GetPosition(ImageCanvas).X + ", " + e.GetPosition(ImageCanvas).Y;
-        }
-
-        private void MouseMove(object sender, MouseEventArgs e) 
+        /// <summary>
+        /// Draw the rectangle when user press left mouse button and drag
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MouseMove(object sender, MouseEventArgs e)
         {
             var position = e.GetPosition(ImageCanvas);
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -139,13 +143,75 @@ namespace cf
 
                 Canvas.SetLeft(rectSelectArea, x);
                 Canvas.SetTop(rectSelectArea, y);
-
-                tbPosition.Text = position.X + ", " + position.Y + "\tMouseDown: " + isMouseDown + (e.LeftButton == MouseButtonState.Pressed);
+                tbPosition.Text = "Start drawing";
             }
-            else {
-                tbPosition.Text = "Stop!\t" + position.X + ", " + position.Y;
+            else
+            {
+                tbPosition.Text = "Stop drawing";
+            }
+        }
+        /// <summary>
+        /// Finish the rectangle drawing when user release left mouse button
+        /// </summary>
+        private void MouseButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            isMouseDown = false;
+        }
+
+        /// <summary>
+        /// Delete the rectangle
+        ///</summary>
+        private void Rec_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Rectangle rec = (Rectangle)sender;
+            ImageCanvas.Children.Remove(rec);
+        }
+
+        /// <summary>
+        /// Move the rectangle
+        /// </summary>
+        private void Rec_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ((Rectangle) sender).Cursor = Cursors.Hand;
+            startToMove = true;
+        }
+
+        private void Rec_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && startToMove == true) { 
+
+                Point point = e.GetPosition(ImageCanvas);
+                Rectangle rec = (Rectangle)sender;
+                double margineLeft = point.X - rec.Width / 2;
+                double margineTop = point.Y - rec.Height / 2;
+
+                double horizontalMarginSpace = (ImageCanvas.ActualWidth - Picture.ActualWidth) / 2;
+                double verticalMarginSpace = (ImageCanvas.ActualHeight - Picture.ActualHeight) / 2;
+
+                // deal the boundary problem
+                if (margineLeft < horizontalMarginSpace) {
+                    margineLeft = horizontalMarginSpace;
+                }
+                else if ((margineLeft + rec.Width) > ImageCanvas.ActualWidth - horizontalMarginSpace) {
+                    margineLeft = (ImageCanvas.ActualWidth - horizontalMarginSpace) - rec.Width;
+                }
+                if (margineTop < verticalMarginSpace) { 
+                    margineTop= verticalMarginSpace;
+                }
+                else if ((margineTop + rec.Height) > ImageCanvas.ActualHeight - verticalMarginSpace)
+                {
+                    margineTop = (ImageCanvas.ActualHeight - verticalMarginSpace) - rec.Height;
+                }
+                Canvas.SetLeft(rec, margineLeft);
+                Canvas.SetTop(rec, margineTop);
             }
         }
 
+        private void Rec_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            startToMove = false;
+            ((Rectangle)sender).ReleaseMouseCapture();
+            ((Rectangle)sender).Cursor = Cursors.Arrow;
+        }
     }
 }

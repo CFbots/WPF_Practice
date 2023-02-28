@@ -8,18 +8,31 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid x:Name="Grid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="50"/>
             <RowDefinition x:Name="Row1"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" Name="btnFire" Content="Upload the Picture" 
-                Width="120" Height="Auto" Margin="0,0,0,10"
-                Click="btnFire_Click"/>
+        <StackPanel Name="ToolBar" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Name="btnFire" Padding="5" Margin="5"
+                Width="auto" Click="openPic_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="Resource\folder.png" Width="15" Height="15"/>
+                    <TextBlock Margin="5,0" Text="Upload" />
+                </StackPanel>
+            </Button>
+            <Button  Name="btnSave" Padding="5" Margin="5"
+                Width="auto" Click="savePic_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="Resource\save.png" Width="15" Height="15"/>
+                    <TextBlock Margin="5,0" Text="Save" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
         
         <Canvas Grid.Row="1" Name="ImageCanvas">
             <Image Grid.Row="1" x:Name="Picture" 
-                   Stretch="Fill"
+                   Stretch="Uniform"
                    Width="{Binding Path=ActualWidth, ElementName=ImageCanvas}"
                    Height="{Binding Path=ActualHeight, ElementName=ImageCanvas}"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -27,7 +40,7 @@
                    PreviewMouseLeftButtonUp="MouseButtonUp"
                    PreviewMouseMove="MouseMove"/>
         </Canvas>
-        <TextBox Grid.Row="2" Name="tbInfo" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" BorderThickness="0"/>
+        <TextBlock Grid.Row="2" x:Name="tbInfo"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15"/>
         <TextBlock Grid.Row="2" x:Name="tbPosition"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
     </Grid>

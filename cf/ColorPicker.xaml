@@ -16,14 +16,14 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <!--调色板-->
+        <!--palette-->
         <Border Grid.Column="0" Grid.Row="0" BorderBrush="#d3d3d3" BorderThickness="1" Width="197" Height="135" HorizontalAlignment="Left">
             <Canvas>
                 <Image x:Name="imgColor" Stretch="Fill" Width="195" Height="133" MouseDown="imgColor_MouseDown" MouseUp="imgColor_MouseUp"></Image>
                 <Ellipse x:Name="ellColor" Canvas.Left="-4" Canvas.Bottom="-4" Width="8" Height="8" Fill="Transparent" Opacity="0.5" Stroke="White" StrokeThickness="1"/>
             </Canvas>
         </Border>
-        <!--颜色选择器-->
+        <!--color picker-->
         <Border Grid.Column="1" BorderBrush="#d3d3d3" BorderThickness="1" Width="20" Height="135">
             <Canvas>
                 <Image x:Name="imgColorSelector" Stretch="Fill" Width="18" Height="133" MouseDown="imgColorSelector_MouseDown" MouseUp="imgColorSelector_MouseUp"></Image>
