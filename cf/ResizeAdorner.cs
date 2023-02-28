@@ -1,5 +1,6 @@
 ﻿using cf;
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -8,13 +9,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Schema;
 
 namespace cf
 {
     public class ResizeAdorner : Adorner
     {
         VisualCollection AdornerVisuals;
-        Thumb ThumbUpperLeft, ThumbBottomRight, ThumbRightSide, ThumbBottomSide;
+        Thumb ThumbUpperLeft, ThumbBottomRight, ThumbRightSide, ThumbBottomSide, ThumbUpperSide, ThumbLeftSide;
         Rectangle RectBorder;
         Button BtnChangeColor;
 
@@ -22,6 +24,9 @@ namespace cf
         {
             AdornerVisuals = new VisualCollection(this);
             ThumbUpperLeft = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbUpperSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbLeftSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+
             ThumbBottomRight = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             ThumbRightSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             ThumbBottomSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
@@ -45,6 +50,8 @@ namespace cf
             BtnChangeColor.Content = pnl;
 
             ThumbUpperLeft.DragDelta += ThumbUpperLeft_DragDelta;
+            ThumbUpperSide.DragDelta += ThumbUpperSide_DragDelta;
+            ThumbLeftSide.DragDelta += ThumbLeftSide_DragDelta; ;
             ThumbBottomRight.DragDelta += ThumbBottomRight_DragDelta;
             ThumbRightSide.DragDelta += ThumbRightSide_DragDelta;
             ThumbBottomSide.DragDelta += ThumbBottomSide_DragDelta;
@@ -52,6 +59,8 @@ namespace cf
 
             AdornerVisuals.Add(RectBorder);
             AdornerVisuals.Add(ThumbUpperLeft);
+            AdornerVisuals.Add(ThumbUpperSide);
+            AdornerVisuals.Add(ThumbLeftSide);
             AdornerVisuals.Add(ThumbBottomRight);
             AdornerVisuals.Add(ThumbRightSide);
             AdornerVisuals.Add(ThumbBottomSide);
@@ -71,20 +80,28 @@ namespace cf
 
         private void ThumbUpperLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            //Control item = (Control)this.DataContext;
+            var elem = (FrameworkElement)AdornedElement;
 
-            //var elem = (FrameworkElement)AdornedElement;
-            //Canvas imageCanvas = (Canvas)Application.Current.MainWindow.FindName("ImageCanvas");
-            //var position = Mouse.GetPosition(imageCanvas);
+            Canvas.SetTop(elem, Canvas.GetTop(elem) + e.VerticalChange);
+            Canvas.SetLeft(elem, Canvas.GetLeft(elem) + e.HorizontalChange);
+            elem.Height = elem.Height - e.VerticalChange < 0 ? 0 : elem.Height - e.VerticalChange;
+            elem.Width = elem.Width - e.HorizontalChange < 0 ? 0 : elem.Width - e.HorizontalChange;
+        }
 
-            //double translatedX = position.X + e.HorizontalChange;
-            //double translatedY = position.Y + e.VerticalChange;
-            //double translatedY = Canvas.GetTop(item) + e.VerticalChange;
+        private void ThumbUpperSide_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            var elem = (FrameworkElement)AdornedElement;
 
-            //Canvas.SetLeft(elem, translatedX);
-            //Canvas.SetTop(item, translatedY);
-            //item.Height = Math.Max(0, item.Height - e.VerticalChange);
-            //elem.Width = Math.Max(0, elem.Width - e.HorizontalChange);
+            Canvas.SetTop(elem, Canvas.GetTop(elem) + e.VerticalChange);
+            elem.Height = elem.Height - e.VerticalChange < 0 ? 0 : elem.Height - e.VerticalChange;
+        }
+
+        private void ThumbLeftSide_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            var elem = (FrameworkElement)AdornedElement;
+
+            Canvas.SetLeft(elem, Canvas.GetLeft(elem) + e.HorizontalChange);
+            elem.Width = elem.Width - e.HorizontalChange < 0 ? 0 : elem.Width - e.HorizontalChange;
         }
 
         private void ThumbBottomRight_DragDelta(object sender, DragDeltaEventArgs e)
@@ -106,7 +123,6 @@ namespace cf
             elem.Height = elem.Height + e.VerticalChange < 0 ? 0 : elem.Height + e.VerticalChange;
         }
 
-
         protected override Visual GetVisualChild(int index)
         {
             return AdornerVisuals[index];
@@ -117,9 +133,11 @@ namespace cf
         protected override Size ArrangeOverride(Size finalSize)
         {
             RectBorder.Arrange(new Rect(-2.5, -2.5, AdornedElement.DesiredSize.Width + 2.5, AdornedElement.DesiredSize.Height + 2.5));
-            BtnChangeColor.Arrange(new Rect(AdornedElement.DesiredSize.Width - 20, -20, 20, 20));
+            BtnChangeColor.Arrange(new Rect(AdornedElement.DesiredSize.Width - 40, -20, 20, 20));
 
             ThumbUpperLeft.Arrange(new Rect(-5, -5, 10, 10));
+            ThumbUpperSide.Arrange(new Rect((AdornedElement.DesiredSize.Width - 5) / 2, -5, 10, 10));
+            ThumbLeftSide.Arrange(new Rect(-5, (AdornedElement.DesiredSize.Height - 5) / 2, 10, 10));
             ThumbBottomRight.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, AdornedElement.DesiredSize.Height - 5, 10, 10));
             ThumbRightSide.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, (AdornedElement.DesiredSize.Height - 5) /2, 10, 10));
             ThumbBottomSide.Arrange(new Rect((AdornedElement.DesiredSize.Width - 5)/2, AdornedElement.DesiredSize.Height - 5, 10, 10));

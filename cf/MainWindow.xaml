@@ -41,7 +41,5 @@
                    PreviewMouseMove="MouseMove"/>
         </Canvas>
         <TextBlock Grid.Row="2" x:Name="tbInfo"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15"/>
-        <TextBlock Grid.Row="2" x:Name="tbPosition"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
-
     </Grid>
 </Window>

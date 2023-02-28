@@ -113,7 +113,7 @@ namespace cf
             Canvas.SetLeft(rectSelectArea, startPoint.X);
             Canvas.SetTop(rectSelectArea, startPoint.Y);
 
-            tbInfo.Text = "Click the right mouse to delete the rectangle; Click the up right red button to change color";
+            tbInfo.Text = "Click the right mouse to delete the rectangle; Click the upper right color changing button to change color";
             rectSelectArea.MouseLeftButtonDown += Rec_MouseLeftButtonDown;
             rectSelectArea.MouseMove += Rec_MouseMove;
             rectSelectArea.MouseLeftButtonUp += Rec_MouseLeftButtonUp;
@@ -125,8 +125,6 @@ namespace cf
         /// <summary>
         /// Draw the rectangle when user press left mouse button and drag
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MouseMove(object sender, MouseEventArgs e)
         {
             var position = e.GetPosition(ImageCanvas);
@@ -143,11 +141,6 @@ namespace cf
 
                 Canvas.SetLeft(rectSelectArea, x);
                 Canvas.SetTop(rectSelectArea, y);
-                tbPosition.Text = "Start drawing";
-            }
-            else
-            {
-                tbPosition.Text = "Stop drawing";
             }
         }
         /// <summary>
@@ -168,7 +161,7 @@ namespace cf
         }
 
         /// <summary>
-        /// Move the rectangle
+        /// Start to move the rectangle
         /// </summary>
         private void Rec_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -176,6 +169,9 @@ namespace cf
             startToMove = true;
         }
 
+        /// <summary>
+        /// Move the rectangle
+        /// </summary>
         private void Rec_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && startToMove == true) { 
@@ -207,6 +203,9 @@ namespace cf
             }
         }
 
+        /// <summary>
+        /// Stop to move the rectangle
+        /// </summary>
         private void Rec_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             startToMove = false;
