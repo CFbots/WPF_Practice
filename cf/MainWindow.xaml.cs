@@ -8,6 +8,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+//Reference:https://blog.csdn.net/lindexi_gd/article/details/84252774
+//Reference:https://wpf-tutorial.com/basic-controls/the-image-control/
+//Reference:https://stackoverflow.com/questions/36843242/save-image-from-image-control-wpf-c-sharp
 
 namespace cf
 {

@@ -1,36 +1,29 @@
-﻿using cf;
-using System;
-using System.Security.Cryptography.X509Certificates;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Xml.Schema;
+//Reference: https://www.youtube.com/watch?v=ddVXKMpWGME
+//Reference: https://stackoverflow.com/questions/5389769/image-button-in-c-sharp-code-behind
 
 namespace cf
 {
     public class ResizeAdorner : Adorner
     {
         VisualCollection AdornerVisuals;
-        Thumb ThumbUpperLeft, ThumbBottomRight, ThumbRightSide, ThumbBottomSide, ThumbUpperSide, ThumbLeftSide;
+        Thumb ThumbUpperLeft, ThumbUpperRight, ThumbBottomLeft, ThumbBottomRight, ThumbRightSide, ThumbBottomSide, ThumbUpperSide, ThumbLeftSide;
         Rectangle RectBorder;
         Button BtnChangeColor;
 
         public ResizeAdorner(UIElement adornedElement) : base(adornedElement)
         {
             AdornerVisuals = new VisualCollection(this);
-            ThumbUpperLeft = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
-            ThumbUpperSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
-            ThumbLeftSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
-
-            ThumbBottomRight = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
-            ThumbRightSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
-            ThumbBottomSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
             RectBorder = new Rectangle() { Stroke = Brushes.Coral, StrokeThickness = 2, StrokeDashArray = { 3, 2 } }; //dotted line border
+
+            ThumbInitializer();
 
             //Button for color changing
             StackPanel pnl = new StackPanel();
@@ -48,25 +41,47 @@ namespace cf
                 Height = 20, Width = 20, Background = Brushes.White
             };
             BtnChangeColor.Content = pnl;
-
-            ThumbUpperLeft.DragDelta += ThumbUpperLeft_DragDelta;
-            ThumbUpperSide.DragDelta += ThumbUpperSide_DragDelta;
-            ThumbLeftSide.DragDelta += ThumbLeftSide_DragDelta; ;
-            ThumbBottomRight.DragDelta += ThumbBottomRight_DragDelta;
-            ThumbRightSide.DragDelta += ThumbRightSide_DragDelta;
-            ThumbBottomSide.DragDelta += ThumbBottomSide_DragDelta;
             BtnChangeColor.Click += BtnChangeColor_Click;
 
             AdornerVisuals.Add(RectBorder);
+            AdornerVisuals.Add(BtnChangeColor);
             AdornerVisuals.Add(ThumbUpperLeft);
+            AdornerVisuals.Add(ThumbUpperRight);
             AdornerVisuals.Add(ThumbUpperSide);
             AdornerVisuals.Add(ThumbLeftSide);
+            AdornerVisuals.Add(ThumbBottomLeft);
             AdornerVisuals.Add(ThumbBottomRight);
             AdornerVisuals.Add(ThumbRightSide);
             AdornerVisuals.Add(ThumbBottomSide);
-            AdornerVisuals.Add(BtnChangeColor);
         }
 
+        private void ThumbInitializer() {
+            ThumbUpperLeft = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbUpperRight = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbUpperSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbLeftSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbBottomLeft = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbBottomRight = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbRightSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+            ThumbBottomSide = new Thumb() { Background = Brushes.Coral, Height = 10, Width = 10 };
+
+            ThumbUpperLeft.DragDelta += ThumbUpperLeft_DragDelta;
+            ThumbUpperRight.DragDelta += ThumbUpperRight_DragDelta;
+            ThumbUpperSide.DragDelta += ThumbUpperSide_DragDelta;
+            ThumbLeftSide.DragDelta += ThumbLeftSide_DragDelta;
+            ThumbBottomLeft.DragDelta += ThumbBottomLeft_DragDelta;
+            ThumbBottomRight.DragDelta += ThumbBottomRight_DragDelta;
+            ThumbRightSide.DragDelta += ThumbRightSide_DragDelta;
+            ThumbBottomSide.DragDelta += ThumbBottomSide_DragDelta;
+        }
+
+        private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e,
+                                           bool left, bool right,
+                                           bool top, bool button, 
+                                           bool corner, bool side) 
+        { 
+
+        }
         private void BtnChangeColor_Click(object sender, RoutedEventArgs e)
         {
             var rect = (Rectangle)AdornedElement;
@@ -86,6 +101,15 @@ namespace cf
             Canvas.SetLeft(elem, Canvas.GetLeft(elem) + e.HorizontalChange);
             elem.Height = elem.Height - e.VerticalChange < 0 ? 0 : elem.Height - e.VerticalChange;
             elem.Width = elem.Width - e.HorizontalChange < 0 ? 0 : elem.Width - e.HorizontalChange;
+        }
+
+        private void ThumbUpperRight_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            var elem = (FrameworkElement)AdornedElement;
+
+            Canvas.SetTop(elem, Canvas.GetTop(elem) + e.VerticalChange);
+            elem.Height = elem.Height - e.VerticalChange < 0 ? 0 : elem.Height - e.VerticalChange;
+            elem.Width = elem.Width + e.HorizontalChange < 0 ? 0 : elem.Width + e.HorizontalChange;
         }
 
         private void ThumbUpperSide_DragDelta(object sender, DragDeltaEventArgs e)
@@ -108,7 +132,14 @@ namespace cf
         {
             var elem = (FrameworkElement)AdornedElement;
             elem.Height = elem.Height + e.VerticalChange < 0 ? 0 : elem.Height + e.VerticalChange;
-            elem.Width = elem.Width + e.HorizontalChange < 0 ? 0: elem.Width + e.HorizontalChange;
+            elem.Width = elem.Width + e.HorizontalChange < 0 ? 0 : elem.Width + e.HorizontalChange;
+        }
+        private void ThumbBottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            var elem = (FrameworkElement)AdornedElement;
+            Canvas.SetLeft(elem, Canvas.GetLeft(elem) + e.HorizontalChange);
+            elem.Height = elem.Height + e.VerticalChange < 0 ? 0 : elem.Height + e.VerticalChange;
+            elem.Width = elem.Width - e.HorizontalChange < 0 ? 0: elem.Width - e.HorizontalChange;
         }
 
         private void ThumbRightSide_DragDelta(object sender, DragDeltaEventArgs e)
@@ -136,8 +167,10 @@ namespace cf
             BtnChangeColor.Arrange(new Rect(AdornedElement.DesiredSize.Width - 40, -20, 20, 20));
 
             ThumbUpperLeft.Arrange(new Rect(-5, -5, 10, 10));
+            ThumbUpperRight.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, -5, 10, 10));
             ThumbUpperSide.Arrange(new Rect((AdornedElement.DesiredSize.Width - 5) / 2, -5, 10, 10));
             ThumbLeftSide.Arrange(new Rect(-5, (AdornedElement.DesiredSize.Height - 5) / 2, 10, 10));
+            ThumbBottomLeft.Arrange(new Rect(-5, AdornedElement.DesiredSize.Height - 5, 10, 10));
             ThumbBottomRight.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, AdornedElement.DesiredSize.Height - 5, 10, 10));
             ThumbRightSide.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, (AdornedElement.DesiredSize.Height - 5) /2, 10, 10));
             ThumbBottomSide.Arrange(new Rect((AdornedElement.DesiredSize.Width - 5)/2, AdornedElement.DesiredSize.Height - 5, 10, 10));
