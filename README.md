@@ -34,5 +34,3 @@ https://wpf-tutorial.com/basic-controls/the-image-control/
 https://www.youtube.com/watch?v=ddVXKMpWGME
 https://stackoverflow.com/questions/5389769/image-button-in-c-sharp-code-behind
 https://blog.csdn.net/dnazhd/article/details/89514256
-
-### Thank you for your time! :)
